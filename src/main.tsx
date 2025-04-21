@@ -1,11 +1,20 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-// import './index.css'
-import 'antd/dist/antd.css';
-import App from './App.tsx'
+// src/main.tsx
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { ConfigProvider } from "antd";
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+root.render(
+  <React.StrictMode>
+    <ConfigProvider
+      theme={{
+        token: {
+          // có thể tùy chỉnh màu chủ đề tại đây
+        },
+      }}
+    >
+      <App />
+    </ConfigProvider>
+  </React.StrictMode>
+);
