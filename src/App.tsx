@@ -1,16 +1,8 @@
 import * as React from "react";
 import {
-  createBrowserRouter,
-  RouterProvider,
+  RouterProvider
 } from "react-router-dom";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    // element: <Root />,
-    element: <div>Hello world!</div>,
-  },
-]);
+import router from './router';
 
 export default function App() {
   return (
