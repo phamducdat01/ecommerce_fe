@@ -1,8 +1,14 @@
 import React from 'react';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, FormProps, Input, message } from 'antd';
+
+
+type FieldType = {
+    message?: string;
+};
 
 const CustomerSupportPage: React.FC = () => {
-    const handleSubmit = (values: any) => {
+    const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
+        console.log('Success:', values);
         message.success('Your message has been sent!');
     };
 

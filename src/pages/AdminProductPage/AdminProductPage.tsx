@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, InputNumber } from 'antd';
 
+interface DataType {
+    id: string;
+    name: string;
+    price: number;
+    description: string;
+}
+
 const AdminProductPage: React.FC = () => {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<DataType[]>([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
 
@@ -34,7 +41,7 @@ const AdminProductPage: React.FC = () => {
         {
             title: 'Action',
             key: 'action',
-            render: (text: any, record: any) => (
+            render: (_: string, record: DataType) => (
                 <Button onClick={() => handleEditProduct(record.id)}>Edit</Button>
             ),
         },
