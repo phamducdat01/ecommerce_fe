@@ -21,6 +21,7 @@ const Card = styled.div`
 `;
 
 interface SignUpFormValues {
+    name: string;
     email: string;
     password: string;
 }
@@ -35,6 +36,13 @@ const SignUpPage: React.FC = () => {
             <Card>
                 <h2 style={{ textAlign: 'center' }}>Sign Up</h2>
                 <Form layout="vertical" onFinish={onFinish}>
+                    <Form.Item
+                        label="Name"
+                        name="name"
+                        rules={[{ required: true, type: 'string', message: 'Enter a valid email' }]}
+                    >
+                        <Input />
+                    </Form.Item>
                     <Form.Item
                         label="Email"
                         name="email"
