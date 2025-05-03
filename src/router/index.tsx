@@ -15,6 +15,8 @@ import CustomerSupportPage from '../pages/CustomerSupportPage/CustomerSupportPag
 import AboutUsPage from '../pages/AboutUsPage/AboutUsPage';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import HomePage from '../pages/HomePage/HomePage';
+import ForgotPassword from '../pages/ForgotPassword/ForgotPassword';
+import ResetPassword from '../pages/ResetPassword/ResetPassword';
 
 const router = createBrowserRouter([
     {
@@ -34,11 +36,13 @@ const router = createBrowserRouter([
         ],
     },
     {
-        path: '',
+        path: '/',
         element: <LayoutNoHeaderFooter />,  // Layout không có Header và Footer
         children: [
-            { path: '/login', element: <LoginPage /> }, // Trang đăng nhập
-            { path: '/sign-up', element: <SignUpPage /> },
+            { path: 'login', element: <LoginPage /> }, // Trang đăng nhập
+            { path: 'sign-up', element: <SignUpPage /> },
+            { path: 'forgot-password', element: <ForgotPassword /> },
+            { path: 'reset-password/:token', element: <ResetPassword /> },
         ],
     },
 ]);

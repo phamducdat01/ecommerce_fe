@@ -39,4 +39,34 @@ axiosClient.interceptors.request.use(
     }
 );
 
+// Interceptor để xử lý lỗi 401 và làm mới token
+// api.interceptors.response.use(
+//     (response) => response,
+//     async (error: AxiosError) => {
+//         const originalRequest = error.config as any;
+//         if (error.response?.status === 401 && !originalRequest._retry) {
+//             originalRequest._retry = true;
+//             try {
+//                 const refreshTokenValue = localStorage.getItem('refreshToken');
+//                 if (!refreshTokenValue) {
+//                     throw new Error('No refresh token available');
+//                 }
+//                 const response = await api.post('/auth/refresh-token', { refreshToken: refreshTokenValue });
+//                 const newAccessToken = response.data.metadata.accessToken;
+//                 localStorage.setItem('accessToken', newAccessToken);
+//                 originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+//                 return api(originalRequest);
+//             } catch (refreshError) {
+//                 // Nếu làm mới token thất bại, xóa token và yêu cầu đăng nhập lại
+//                 localStorage.removeItem('accessToken');
+//                 localStorage.removeItem('refreshToken');
+//                 window.location.href = '/login';
+//                 return Promise.reject(refreshError);
+//             }
+//         }
+//         return Promise.reject(error);
+//     }
+// );
+
+
 export default axiosClient;
