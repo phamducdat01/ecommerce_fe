@@ -7,6 +7,9 @@ import { refreshToken, signup } from '../../apis/access.api';
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from 'axios';
 import axiosClient from '../../utils/axiosClient';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../redux/store';
+import { setUser } from '../../redux/slices/authSlice';
 
 const Wrapper = styled.div`
   display: flex;
@@ -44,11 +47,18 @@ interface AuthResponse {
 const SignUpPage: React.FC = () => {
     const navigate = useNavigate();
 
+    const dispatch = useDispatch<AppDispatch>();
+
     // Mutation cho đăng ký
     const signupMutation = useMutation<AuthResponse, AxiosError<{ message: string }>, { name: string; email: string; password: string }>({
         mutationFn: signup,
         onSuccess: (data) => {
             localStorage.setItem('accessToken', data.metadata.accessToken);
+            const userData = {
+                userId: data.metadata.user._id,
+                role: data.metadata.user.role
+            }
+            dispatch(setUser(userData))
             alert(data.message);
             // navigate('/');
         },
@@ -112,10 +122,10 @@ const SignUpPage: React.FC = () => {
         console.log('values', values);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { confirm: _confirm, ...value } = values;
-        // signupMutation.mutate(value);
+        signupMutation.mutate(value);
 
-        const response = await axiosClient.get('/products');
-        return response.data;
+        // const response = await axiosClient.get('/products');
+        // return response.data;
     };
 
     return (

@@ -1,5 +1,9 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import queryString from 'query-string';
+import { persistor, store } from '../redux/store';
+import { logout } from '../redux/slices/authSlice';
+import type { RootState } from '../redux/store';
+import { useSelector } from 'react-redux';
 
 interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
     _retry?: boolean;
@@ -31,14 +35,10 @@ axiosClient.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
         const originalRequest = error.config as AxiosRequestConfigWithRetry;
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        if (error.response?.status === 401 && !originalRequest._retry && !originalRequest.url?.includes('/auth/refresh-token')) {
             originalRequest._retry = true;
             try {
-                const refreshTokenValue = localStorage.getItem('refreshToken');
-                if (!refreshTokenValue) {
-                    throw new Error('No refresh token available');
-                }
-                const response = await axiosClient.post('/auth/refresh-token', { refreshToken: refreshTokenValue });
+                const response = await axiosClient.post('/auth/refresh-token');
                 const newAccessToken = response.data.metadata.accessToken;
                 localStorage.setItem('accessToken', newAccessToken);
                 if (originalRequest.headers) {
@@ -47,8 +47,16 @@ axiosClient.interceptors.response.use(
                 return axiosClient(originalRequest);
             } catch (refreshError) {
                 // Nếu làm mới token thất bại, xóa token và yêu cầu đăng nhập lại
+                try {
+                    await axiosClient.post('/auth/logout', {
+                        userId: useSelector((state: RootState) => state.auth.user?.userId)
+                    });
+                } catch (logoutError) {
+                    console.error('Lỗi khi logout:', logoutError);
+                }
                 // localStorage.removeItem('accessToken');
-                // localStorage.removeItem('refreshToken');
+                // store.dispatch(logout());
+                // persistor.purge();
                 // window.location.href = '/login';
                 return Promise.reject(refreshError);
             }
