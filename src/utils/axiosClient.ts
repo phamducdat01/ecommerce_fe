@@ -1,9 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import queryString from 'query-string';
-import { persistor, store } from '../redux/store';
-import { logout } from '../redux/slices/authSlice';
-import type { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
+import type { RootState } from '../redux/store';
 
 interface AxiosRequestConfigWithRetry extends AxiosRequestConfig {
     _retry?: boolean;

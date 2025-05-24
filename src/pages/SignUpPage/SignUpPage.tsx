@@ -1,15 +1,14 @@
 // Trước: SignUpForm.tsx
-import React from 'react';
-import { Form, Input, Button } from 'antd';
-import styled from 'styled-components';
 import { useMutation } from '@tanstack/react-query';
-import { refreshToken, signup } from '../../apis/access.api';
-import { useNavigate } from "react-router-dom";
+import { Button, Form, Input } from 'antd';
 import { AxiosError } from 'axios';
-import axiosClient from '../../utils/axiosClient';
+import React from 'react';
 import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../../redux/store';
+import { useNavigate } from "react-router-dom";
+import styled from 'styled-components';
+import { signup } from '../../apis/access.api';
 import { setUser } from '../../redux/slices/authSlice';
+import { AppDispatch } from '../../redux/store';
 
 const Wrapper = styled.div`
   display: flex;
@@ -60,27 +59,13 @@ const SignUpPage: React.FC = () => {
             }
             dispatch(setUser(userData))
             alert(data.message);
-            // navigate('/');
+            navigate('/');
         },
         onError: (error) => {
             console.log(error);
             alert(`Lỗi: ${error?.response?.data.message}`);
         }
     });
-
-    // // Mutation cho đăng nhập
-    // const loginMutation = useMutation<AuthResponse, Error, { email: string; password: string }>({
-    //     mutationFn: login,
-    //     onSuccess: (data) => {
-    //         localStorage.setItem('accessToken', data.metadata.accessToken);
-    //         localStorage.setItem('refreshToken', data.metadata.refreshToken);
-    //         setUserId(data.metadata.user._id);
-    //         alert(data.message);
-    //     },
-    //     onError: (error) => {
-    //         alert(`Lỗi: ${error.message}`);
-    //     }
-    // });
 
     // // Mutation cho đăng xuất
     // const logoutMutation = useMutation<LogoutResponse, Error, string>({
@@ -123,9 +108,6 @@ const SignUpPage: React.FC = () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { confirm: _confirm, ...value } = values;
         signupMutation.mutate(value);
-
-        // const response = await axiosClient.get('/products');
-        // return response.data;
     };
 
     return (

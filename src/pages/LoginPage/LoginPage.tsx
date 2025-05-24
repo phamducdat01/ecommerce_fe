@@ -1,6 +1,12 @@
 import React from 'react';
 import { Form, Input, Button, Typography } from 'antd';
 import styled from 'styled-components';
+import { useMutation } from '@tanstack/react-query';
+import { login } from '../../apis/access.api';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
+import { AppDispatch } from '../../redux/store';
+import { setUser } from '../../redux/slices/authSlice';
 
 const { Title } = Typography;
 
@@ -30,10 +36,44 @@ interface LoginFormValues {
     password: string;
 }
 
+interface AuthResponse {
+    message: string;
+    metadata: {
+        user: { _id: string; name: string; email: string; role: string };
+        accessToken: string;
+        refreshToken: string;
+    };
+}
+
+
 const LoginPage: React.FC = () => {
+
+    const navigate = useNavigate();
+
+    const dispatch = useDispatch<AppDispatch>();
+
+    // Mutation cho đăng nhập
+    const loginMutation = useMutation<AuthResponse, Error, { email: string; password: string }>({
+        mutationFn: login,
+        onSuccess: (data) => {
+            localStorage.setItem('accessToken', data.metadata.accessToken);
+            const userData = {
+                userId: data.metadata.user._id,
+                role: data.metadata.user.role
+            }
+            dispatch(setUser(userData))
+            alert(data.message);
+            navigate('/');
+        },
+        onError: (error) => {
+            alert(`Lỗi: ${error.message}`);
+        }
+    });
+
     const onFinish = (values: LoginFormValues) => {
         console.log('Login data:', values);
-        // TODO: Handle authentication logic here
+
+        loginMutation.mutate(values);
     };
 
     return (

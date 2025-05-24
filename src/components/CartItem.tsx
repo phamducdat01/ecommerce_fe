@@ -1,34 +1,45 @@
-// src/components/CartItem.tsx
-
 import React from 'react';
-import { Card, Button, InputNumber } from 'antd';
+import { Card, Button, Image } from 'antd';
 
-interface CartItemProps {
-    id: number;
+export interface Product {
+    _id: string;
     name: string;
+    slug: string;
+    description: string;
     price: number;
-    quantity: number;
-    onQuantityChange: (id: number, quantity: number) => void;
-    onRemove: (id: number) => void;
+    thumbnail: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ id, name, price, quantity, onQuantityChange, onRemove }) => {
+interface ProductCardProps {
+    product: Product;
+    onAddToCart?: (product: Product) => void;
+}
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
     return (
-        <Card style={{ marginBottom: 16 }}>
-            <h3>{name}</h3>
-            <p>Price: ${price}</p>
-            <InputNumber
-                min={1}
-                value={quantity}
-                onChange={(value) => onQuantityChange(id, value as number)}
-                style={{ marginRight: 8 }}
+        <Card
+            title={product.name}
+            extra={
+                <Button type="primary" onClick={() => onAddToCart?.(product)}>
+                    Add to Cart
+                </Button>
+            }
+            bordered={false}
+            style={{ width: '100%' }}
+        >
+            <Image
+                src={product.thumbnail}
+                alt={product.name}
+                width="100%"
+                style={{ marginBottom: 16, borderRadius: 8 }}
+                preview={false}
             />
-            <Button type="primary" danger onClick={() => onRemove(id)}>
-                Remove
-            </Button>
-            <p>Total: ${price * quantity}</p>
+            <p><strong>Price:</strong> {product.price.toLocaleString('vi-VN')}₫</p>
+            {/* <p><strong>Description:</strong> {product.description}</p> */}
         </Card>
     );
 };
 
-export default CartItem;
+export default ProductCard;
