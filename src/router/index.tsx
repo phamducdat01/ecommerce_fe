@@ -18,6 +18,7 @@ import HomePage from '../pages/HomePage/HomePage';
 import ForgotPassword from '../pages/ForgotPassword/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword/ResetPassword';
 import ProfilePage from '../pages/ProfilePage/ProfilePage';
+import ProductDetailPage from '../pages/ProductDetailPage/ProductDetailPage';
 
 const router = createBrowserRouter([
     {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
             { path: 'about-us', element: <AboutUsPage /> }, // Trang giới thiệu
             { path: 'cart', element: <CartPage /> }, // Trang giỏ hàng
             { path: 'profile', element: <ProfilePage /> }, // Trang Profile
+            { path: 'products/:productId', element: <ProductDetailPage /> }, // Trang Profile
             { path: '*', element: <NotFoundPage /> }, // Trang 404
         ],
     },

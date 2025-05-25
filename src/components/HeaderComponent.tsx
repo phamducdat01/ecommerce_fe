@@ -21,6 +21,7 @@ const StyledHeader = styled(Header)`
 `;
 
 const Logo = styled.div`
+  cursor: pointer;
   font-size: 24px;
   font-weight: bold;
   color: #1890ff;
@@ -43,7 +44,9 @@ const HeaderComponent: React.FC = () => {
   const navigate = useNavigate();
   return (
     <StyledHeader>
-      <Logo>E-Shop</Logo>
+      <Logo onClick={() => navigate('/')}>
+        <div>E-Shop</div>
+      </Logo>
       <Search
         placeholder="Tìm sản phẩm..."
         onSearch={(value) => console.log(value)}

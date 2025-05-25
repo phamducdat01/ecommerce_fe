@@ -20,6 +20,7 @@ const ProfilePage: React.FC = () => {
     const { data: userData, isLoading, isError } = useQuery<IUser | null>({
         queryKey: ['user', userId],
         queryFn: () => userId ? getUserById(userId) : null,
+        staleTime: 5 * 60 * 1000,
     });
 
     const mutation = useMutation({
@@ -67,7 +68,7 @@ const ProfilePage: React.FC = () => {
                             <p><strong>Role:</strong> {userData.role}</p>
                         </Col>
                         <Col span={24} md={16}>
-                            <Card title="Thông tin người dùng" bordered={false}>
+                            <Card title="Thông tin người dùng" >
                                 {editing ? (
                                     <Form
                                         form={form}

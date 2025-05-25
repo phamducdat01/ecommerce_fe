@@ -1,17 +1,11 @@
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import {
-    Checkbox,
-    Col,
-    Layout,
-    Pagination,
-    Row,
-    Spin
-} from 'antd';
+import { Checkbox, Col, Layout, Pagination, Row, Spin, Typography } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import styled from 'styled-components';
 import { getAllCategories } from '../../apis/category.api';
 import { getAllProducts } from '../../apis/product.api';
-import ProductCard from '../../components/CartItem';
+import ProductCard from '../../components/ProductCard';
 
 export interface Product {
     _id: string;
@@ -23,7 +17,7 @@ export interface Product {
     categoryId: string;
     thumbnail: string;
     images: string[];
-    createdAt?: string; // hoặc Date nếu bạn xử lý chuỗi thành Date
+    createdAt?: string;
     updatedAt?: string;
 }
 
@@ -36,15 +30,87 @@ export interface Category {
 }
 
 const { Sider, Content } = Layout;
+const { Title } = Typography;
 
-const pageSize = 10;
+const pageSize = 12; // Tăng số sản phẩm mỗi trang để hiển thị nhiều hơn
+
+// Styled Components
+const PageLayout = styled(Layout)`
+  min-height: 100vh;
+  background-color: #f0f2f5;
+`;
+
+const StyledSider = styled(Sider)`
+  background: #ffffff;
+  padding: 24px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  border-radius: 0 12px 12px 0;
+  overflow-y: auto;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+
+  @media (max-width: 768px) {
+    border-radius: 0;
+    padding: 16px;
+    height: auto;
+    position: relative;
+  }
+`;
+
+const CategoryTitle = styled(Title)`
+  font-size: 18px;
+  color: #2d3748;
+  margin-bottom: 16px;
+`;
+
+const CategoryCheckbox = styled(Checkbox)`
+  display: block;
+  margin-bottom: 12px;
+  font-size: 16px;
+  color: #4a5568;
+
+  .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+
+  &:hover {
+    color: #1890ff;
+  }
+`;
+
+const StyledContent = styled(Content)`
+  padding: 24px;
+  background: transparent;
+
+  @media (max-width: 576px) {
+    padding: 16px;
+  }
+`;
+
+const ProductRow = styled(Row)`
+  margin-bottom: 24px;
+`;
+
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+`;
 
 const HomePage: React.FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
-
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [total, setTotal] = useState<number>(0);
 
     useEffect(() => {
@@ -55,18 +121,17 @@ const HomePage: React.FC = () => {
         setCurrentPage(pageParam);
     }, [searchParams]);
 
-    const {
-        data: categories,
-        isLoading: isCategoryLoading,
-    } = useQuery({
+    const { data: categories, isLoading: isCategoryLoading } = useQuery({
         queryKey: ['categories'],
         queryFn: getAllCategories,
+        staleTime: 5 * 60 * 1000,
     });
 
     const { data, isLoading, isPlaceholderData } = useQuery({
         queryKey: ['products', selectedCategory, currentPage] as const,
         queryFn: () => getAllProducts({ category: selectedCategory, page: currentPage }),
         placeholderData: keepPreviousData,
+        staleTime: 5 * 60 * 1000,
     });
 
     useEffect(() => {
@@ -96,51 +161,62 @@ const HomePage: React.FC = () => {
     };
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
-            <Sider width={250} style={{ background: '#fff', padding: '20px' }}>
-                <h2>Lọc theo danh mục</h2>
+        <PageLayout>
+            <StyledSider
+                width={250}
+                breakpoint="md"
+                collapsedWidth={0}
+                trigger={null}
+            >
+                <CategoryTitle level={4}>Danh mục sản phẩm</CategoryTitle>
                 {isCategoryLoading ? (
-                    <Spin />
+                    <LoadingContainer>
+                        <Spin />
+                    </LoadingContainer>
                 ) : (
-                    categories?.metadata.map((category: Category) => (
-                        <Checkbox
-                            key={category.slug}
-                            checked={selectedCategory === category.slug}
-                            onChange={() => handleCategoryChange(category.slug)}
-                        >
-                            {category.name}
-                        </Checkbox>
-                    ))
+                    <div>
+                        {categories?.metadata.map((category: Category) => (
+                            <CategoryCheckbox
+                                key={category.slug}
+                                checked={selectedCategory === category.slug}
+                                onChange={() => handleCategoryChange(category.slug)}
+                            >
+                                {category.name}
+                            </CategoryCheckbox>
+                        ))}
+                    </div>
                 )}
-            </Sider>
-            <Layout style={{ padding: '0 20px' }}>
-                <Content style={{ padding: '20px' }}>
+            </StyledSider>
+            <Layout>
+                <StyledContent>
                     {isLoading && !isPlaceholderData ? (
-                        <Spin size="large" />
+                        <LoadingContainer>
+                            <Spin size="large" />
+                        </LoadingContainer>
                     ) : (
                         <>
-                            <Row gutter={[16, 16]}>
+                            <ProductRow gutter={[16, 16]}>
                                 {products.map((product) => (
-                                    <Col xs={24} sm={12} md={8} lg={6} key={product._id}>
-                                        <ProductCard
-                                            product={product}
-                                            onAddToCart={() => { }}
-                                        />
+                                    <Col xs={24} sm={12} md={8} lg={6} xl={4} key={product._id}>
+                                        <ProductCard product={product} onAddToCart={() => { }} />
                                     </Col>
                                 ))}
-                            </Row>
-                            <Pagination
-                                current={currentPage}
-                                pageSize={pageSize}
-                                total={total}
-                                onChange={handlePageChange}
-                                style={{ marginTop: 20, textAlign: 'center' }}
-                            />
+                            </ProductRow>
+                            <PaginationContainer>
+                                <Pagination
+                                    current={currentPage}
+                                    pageSize={pageSize}
+                                    total={total}
+                                    onChange={handlePageChange}
+                                    showSizeChanger={false}
+                                    responsive
+                                />
+                            </PaginationContainer>
                         </>
                     )}
-                </Content>
+                </StyledContent>
             </Layout>
-        </Layout>
+        </PageLayout>
     );
 };
 
